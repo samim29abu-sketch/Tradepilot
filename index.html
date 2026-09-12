@@ -1,125 +1,28 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b1020">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
-<title>TradePilot — Paper Trading MVP</title>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080d18"><title>TradePilot Live Paper</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:#0b1020;color:#eaf0ff}
-.wrap{max-width:1100px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{margin:0;font-size:25px}.muted{color:#9ba8c7}.pill{padding:7px 11px;border:1px solid #2b3654;border-radius:999px;color:#9ff0c1;font-size:12px}
-.grid{display:grid;grid-template-columns:330px 1fr;gap:18px;margin-top:18px}.card{background:#121a2e;border:1px solid #26314e;border-radius:15px;padding:17px}
-label{display:block;font-size:12px;color:#aab5d0;margin:12px 0 6px}input,select,button{width:100%;padding:11px;border-radius:9px;border:1px solid #34415f;background:#0c1325;color:#fff;font-size:14px}
-button{cursor:pointer;background:#3459d6;border:0;font-weight:700;margin-top:12px}.danger{background:#b53d4e}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{background:#0c1325;border-radius:11px;padding:13px}.metric b{display:block;font-size:20px;margin-top:5px}.pos{color:#7ee2a8}.neg{color:#ff8995}
-table{width:100%;border-collapse:collapse;margin-top:13px;font-size:13px}th,td{padding:10px;border-bottom:1px solid #26314e;text-align:left}th{color:#9ba8c7}.notice{font-size:12px;color:#f2c96b;line-height:1.5;margin-top:12px}
-#chart{width:100%;height:250px;background:#0c1325;border-radius:10px;margin-top:14px}
-@media(max-width:800px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
-</style>
-
-<style>
-body{padding-bottom:env(safe-area-inset-bottom)}
-.wrap{padding:max(18px,env(safe-area-inset-top)) 14px 30px}
-button{min-height:44px}.card{box-shadow:0 6px 24px rgba(0,0,0,.15)}
-@media(max-width:520px){h1{font-size:22px}.metrics{grid-template-columns:1fr 1fr}.metric b{font-size:17px}input,select,button{font-size:16px}.card{padding:14px}}
-</style>
-</head>
-<body><div id="installBanner" style="display:none;background:#1c2948;padding:10px 14px;text-align:center;font-size:13px">TradePilot can be installed on your phone. <button onclick="installApp()" style="width:auto;margin:0 0 0 8px;padding:8px 12px">Install</button></div>
-<div class="wrap">
-  <div class="top"><div><h1>TradePilot</h1><div class="muted">Stage 1 • Paper Trading Simulator</div></div><div class="pill">REAL MONEY: OFF</div></div>
-  <div class="grid">
-    <div class="card">
-      <h3>Trade setup</h3>
-      <label>Starting capital (₹)</label><input id="capital" type="number" value="100000">
-      <label>Instrument</label><select id="symbol"><option>NIFTY</option><option>BANKNIFTY</option><option>RELIANCE</option><option>INFY</option><option>TCS</option></select>
-      <label>Side</label><select id="side"><option>BUY</option><option>SELL</option></select>
-      <label>Entry price (₹)</label><input id="entry" type="number" value="25000">
-      <div class="row">
-        <div><label>Stop-loss (₹)</label><input id="sl" type="number" value="24900"></div>
-        <div><label>Target (₹)</label><input id="tp" type="number" value="25200"></div>
-      </div>
-      <label>Risk per trade (₹)</label><input id="risk" type="number" value="1000">
-      <label>Quantity</label><input id="qty" type="number" value="10">
-      <button onclick="openTrade()">Open paper trade</button>
-      <button class="danger" onclick="resetAll()">Reset account</button>
-      <div class="notice">Educational simulator only. Prices are manually entered in this MVP; no broker orders are sent.</div>
-    </div>
-    <div>
-      <div class="metrics">
-        <div class="metric">Equity<b id="equity">₹100,000</b></div>
-        <div class="metric">P&L<b id="pnl">₹0</b></div>
-        <div class="metric">Win rate<b id="winrate">0%</b></div>
-        <div class="metric">Max drawdown<b id="dd">₹0</b></div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <h3>Market / trade monitor</h3>
-        <div class="row">
-          <div><label>Current price</label><input id="current" type="number" value="25000" oninput="updatePreview()"></div>
-          <div><label>Selected open trade</label><select id="openSelect" onchange="selectTrade()"><option value="">No open trades</option></select></div>
-        </div>
-        <button onclick="checkPrice()">Check price & auto-exit</button>
-        <div id="preview" class="muted" style="margin-top:10px"></div>
-        <canvas id="chart"></canvas>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <h3>Trade history</h3>
-        <table><thead><tr><th>Time</th><th>Instrument</th><th>Side</th><th>Entry</th><th>Exit</th><th>Qty</th><th>Reason</th><th>P&L</th></tr></thead>
-        <tbody id="history"></tbody></table>
-      </div>
-    </div>
-  </div>
-</div>
+body{margin:0;background:#080d18;color:#eef3ff;font:16px system-ui;padding:15px}main{max-width:850px;margin:auto}.card{background:#111a2c;border:1px solid #293653;border-radius:18px;padding:15px;margin:12px 0}h1{margin:0}.muted{color:#9aa8c2}.price{font-size:36px;font-weight:800}select,input,button{width:100%;box-sizing:border-box;padding:13px;margin:5px 0;border-radius:11px;background:#0a1120;color:white;border:1px solid #344363;font-size:16px}button{background:#4169e1;border:0;font-weight:700}.red{background:#7b2435}.green{color:#37d39a}.loss{color:#ff647c}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{background:#0a1120;padding:10px;border-radius:10px}.stat b{display:block;margin-top:4px}.chart{height:300px}.notice{border-left:4px solid #ffd166;padding:10px;background:#1d2535;font-size:13px}@media(max-width:600px){.grid,.stats{grid-template-columns:1fr}.chart{height:260px}}
+</style></head><body><main>
+<h1>TradePilot</h1><div class="muted">Live market view • Paper trading only</div>
+<div class="card"><b>REAL MONEY: OFF</b><div style="margin-top:15px"><span id="name">NIFTY 50</span><div id="price" class="price">—</div><div id="chg">—</div><small id="status" class="muted">Connecting…</small></div>
+<div class="grid"><div><label>Instrument</label><select id="sym"><option value="^NSEI">NIFTY 50</option><option value="^NSEBANK">NIFTY BANK</option><option value="RELIANCE.NS">RELIANCE</option><option value="INFY.NS">INFOSYS</option><option value="TCS.NS">TCS</option><option value="SBIN.NS">SBI</option></select></div><div><label>Refresh</label><select id="sec"><option>5</option><option>10</option><option>20</option></select></div></div></div>
+<div class="card"><div class="notice"><b>Paper only.</b> The public quote feed may be delayed. No broker orders are sent and no real money is used.</div><div class="chart"><iframe id="tv" style="width:100%;height:100%;border:0" src="https://www.tradingview.com/widgetembed/?symbol=NSE%3ANIFTY&interval=5&theme=dark&style=1&timezone=Asia%2FKolkata&withdateranges=1&hideideas=1"></iframe></div></div>
+<div class="card"><h3>Paper trade</h3><div class="grid"><div><label>Side</label><select id="side"><option>BUY</option><option>SELL</option></select></div><div><label>Quantity</label><input id="qty" type="number" value="1" min="1"></div><div><label>Stop-loss</label><input id="sl" type="number" step=".05" placeholder="price"></div><div><label>Target</label><input id="tp" type="number" step=".05" placeholder="price"></div></div><button id="open">Open paper trade at current price</button><button id="close" class="red" style="display:none">Close at current price</button></div>
+<div class="card"><div class="stats"><div class="stat">Equity<b id="eq">₹1,00,000</b></div><div class="stat">Open P&L<b id="pnl">₹0</b></div><div class="stat">Wins<b id="wins">0</b></div><div class="stat">Losses<b id="losses">0</b></div></div><p id="pos" class="muted">No open position</p></div>
+<div class="card"><h3>History</h3><div id="hist"></div><button id="reset">Reset paper account</button></div>
+</main>
 <script>
-let state={capital:100000,realized:0,trades:[],equityCurve:[100000],nextId:1};
-const $=id=>document.getElementById(id);
-function money(n){return '₹'+Math.round(n).toLocaleString('en-IN')}
-function save(){localStorage.setItem('tradepilot',JSON.stringify(state))}
-function load(){let s=localStorage.getItem('tradepilot');if(s)state=JSON.parse(s); $('capital').value=state.capital}
-function openTrade(){
- const entry=+$('entry').value, sl=+$('sl').value,tp=+$('tp').value,qty=+$('qty').value,risk=+$('risk').value,side=$('side').value;
- if(!entry||!sl||!tp||!qty)return alert('Fill all trade fields.');
- if(side==='BUY' && !(sl<entry && tp>entry))return alert('For BUY: SL must be below entry and target above entry.');
- if(side==='SELL' && !(sl>entry && tp<entry))return alert('For SELL: SL must be above entry and target below entry.');
- let riskPerUnit=Math.abs(entry-sl), suggested=Math.max(1,Math.floor(risk/riskPerUnit));
- state.trades.push({id:state.nextId++,time:new Date().toLocaleString(),symbol:$('symbol').value,side,entry,sl,tp,qty,status:'OPEN',suggested});
- save();render();alert('Paper trade opened. Risk-based suggested quantity: '+suggested);
-}
-function selected(){let id=+$('openSelect').value;return state.trades.find(t=>t.id===id)}
-function checkPrice(){
- let t=selected();if(!t)return alert('Select an open trade.');
- let p=+$('current').value,reason=null;
- if(t.side==='BUY'){if(p<=t.sl){p=t.sl;reason='STOP-LOSS'}else if(p>=t.tp){p=t.tp;reason='TAKE-PROFIT'}}
- else {if(p>=t.sl){p=t.sl;reason='STOP-LOSS'}else if(p<=t.tp){p=t.tp;reason='TAKE-PROFIT'}}
- if(reason){t.exit=p;t.reason=reason;t.status='CLOSED';t.pnl=(t.side==='BUY'?(p-t.entry):(t.entry-p))*t.qty;state.realized+=t.pnl;state.equityCurve.push(state.capital+state.realized);save();render();alert(reason+' triggered. P&L: '+money(t.pnl))}
- else {updatePreview()}
-}
-function updatePreview(){let t=selected();if(!t){$('preview').textContent='Open a trade, then select it to monitor.';return}let p=+$('current').value;let u=t.side==='BUY'?p-t.entry:t.entry-p;$('preview').textContent=`${t.symbol} ${t.side} • Unrealized P&L: ${money(u*t.qty)} • SL ${t.sl} • Target ${t.tp}`}
-function selectTrade(){updatePreview()}
-function render(){
- let closed=state.trades.filter(t=>t.status==='CLOSED'),wins=closed.filter(t=>t.pnl>0).length;
- $('equity').textContent=money(state.capital+state.realized);$('pnl').textContent=money(state.realized);
- $('pnl').className=state.realized>=0?'pos':'neg';$('winrate').textContent=(closed.length?Math.round(wins/closed.length*100):0)+'%';
- let peak=state.equityCurve[0],maxdd=0;state.equityCurve.forEach(x=>{peak=Math.max(peak,x);maxdd=Math.max(maxdd,peak-x)});$('dd').textContent=money(maxdd);
- $('openSelect').innerHTML='<option value="">Select open trade</option>'+state.trades.filter(t=>t.status==='OPEN').map(t=>`<option value="${t.id}">#${t.id} ${t.symbol} ${t.side} @ ${t.entry}</option>`).join('');
- $('history').innerHTML=state.trades.slice().reverse().map(t=>`<tr><td>${t.time}</td><td>${t.symbol}</td><td>${t.side}</td><td>${t.entry}</td><td>${t.exit??'OPEN'}</td><td>${t.qty}</td><td>${t.reason??'—'}</td><td class="${(t.pnl??0)>=0?'pos':'neg'}">${t.pnl==null?'—':money(t.pnl)}</td></tr>`).join('');
- draw();
- updatePreview();
-}
-function draw(){
- let c=$('chart'),x=c.getContext('2d'),w=c.width=c.clientWidth*devicePixelRatio,h=c.height=c.clientHeight*devicePixelRatio;x.clearRect(0,0,w,h);
- let a=state.equityCurve;if(a.length<2){x.fillStyle='#7180a2';x.fillText('Equity curve appears after the first closed trade.',20,30);return}
- let min=Math.min(...a),max=Math.max(...a);x.strokeStyle='#6687ff';x.lineWidth=2*devicePixelRatio;x.beginPath();
- a.forEach((v,i)=>{let px=i/(a.length-1)*w,py=h-(v-min)/(max-min||1)*h*.8-h*.1;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
-}
-function resetAll(){if(confirm('Reset paper account and trade history?')){state={capital:+$('capital').value||100000,realized:0,trades:[],equityCurve:[+$('capital').value||100000],nextId:1};save();render()}}
-load();render();window.addEventListener('resize',draw);
-
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBanner').style.display='block'});
-async function installApp(){if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBanner').style.display='none'}
-if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
-</script>
-</body>
-</html>
+const $=x=>document.getElementById(x);let S=JSON.parse(localStorage.tpLive||'null')||{eq:100000,w:0,l:0,h:[],o:null},p=null,t;
+const money=x=>'₹'+Number(x||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+function save(){localStorage.tpLive=JSON.stringify(S)}function draw(){ $('eq').textContent=money(S.eq);$('wins').textContent=S.w;$('losses').textContent=S.l;
+if(S.o){let z=S.o.side==='BUY'?(p-S.o.e)*S.o.q:(S.o.e-p)*S.o.q;$('pnl').textContent=money(z);$('pnl').className=z>=0?'green':'loss';$('pos').textContent=`${S.o.side} ${S.o.q} @ ${money(S.o.e)} | SL ${money(S.o.sl)} | Target ${money(S.o.tp)} | Live ${money(p)}`;$('open').style.display='none';$('close').style.display='block'}else{$('pnl').textContent='₹0';$('pnl').className='';$('pos').textContent='No open position';$('open').style.display='block';$('close').style.display='none'}
+$('hist').innerHTML=S.h.slice().reverse().map(x=>`<div style="padding:8px 0;border-bottom:1px solid #293653">${x.side} ${money(x.e)} → ${money(x.x)} : <b class="${x.z>=0?'green':'loss'}">${money(x.z)}</b> (${x.r})</div>`).join('')}
+async function quote(){let s=$('sym').value,u='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(s)+'?range=1d&interval=1m',urls=['https://api.allorigins.win/raw?url='+encodeURIComponent(u),'https://corsproxy.io/?url='+encodeURIComponent(u)],d;
+for(let a of urls)try{let r=await fetch(a,{cache:'no-store'});if(r.ok){d=await r.json();if(d.chart?.result?.[0])break}}catch(e){}
+if(!d?.chart?.result?.[0]){$('status').textContent='Quote unavailable — retrying';return}let m=d.chart.result[0].meta;p=Number(m.regularMarketPrice||m.previousClose);let pc=Number(m.previousClose||p),c=p-pc;$('name').textContent=m.longName||m.shortName||s;$('price').textContent=money(p);$('chg').textContent=(c>=0?'+':'')+c.toFixed(2)+' ('+(c/pc*100).toFixed(2)+'%)';$('chg').className=c>=0?'green':'loss';$('status').textContent='Updated '+new Date().toLocaleTimeString();exitCheck();draw()}
+function exitCheck(){if(!S.o||p==null)return;let o=S.o,hit=(o.side==='BUY'&&p<=o.sl)?'STOP LOSS':(o.side==='BUY'&&p>=o.tp)?'TARGET':(o.side==='SELL'&&p>=o.sl)?'STOP LOSS':(o.side==='SELL'&&p<=o.tp)?'TARGET':null;if(hit)closeTrade(hit)}
+function closeTrade(r='MANUAL'){if(!S.o||p==null)return;let o=S.o,z=o.side==='BUY'?(p-o.e)*o.q:(o.e-p)*o.q;S.eq+=z;z>=0?S.w++:S.l++;S.h.push({side:o.side,e:o.e,x:p,z,r});S.o=null;save();draw()}
+$('open').onclick=()=>{if(p==null)return alert('Wait for the live quote.');let sl=+$('sl').value,tp=+$('tp').value,q=+$('qty').value,side=$('side').value;if(!sl||!tp||!q)return alert('Enter stop-loss, target and quantity.');if(side==='BUY'&&!(sl<p&&tp>p))return alert('For BUY, SL must be below price and target above price.');if(side==='SELL'&&!(sl>p&&tp<p))return alert('For SELL, SL must be above price and target below price.');S.o={side,e:p,sl,tp,q};save();draw()};
+$('close').onclick=()=>closeTrade();$('reset').onclick=()=>{if(confirm('Reset paper account?')){S={eq:100000,w:0,l:0,h:[],o:null};save();draw()}};
+$('sym').onchange=()=>{let m={'^NSEI':'NSE%3ANIFTY','^NSEBANK':'NSE%3ANIFTYBANK','RELIANCE.NS':'NSE%3ARELIANCE','INFY.NS':'NSE%3AINFY','TCS.NS':'NSE%3ATCS','SBIN.NS':'NSE%3ASBIN'};$('tv').src='https://www.tradingview.com/widgetembed/?symbol='+m[$('sym').value]+'&interval=5&theme=dark&style=1&timezone=Asia%2FKolkata&withdateranges=1&hideideas=1';quote()};
+$('sec').onchange=()=>{clearInterval(t);t=setInterval(quote,+$('sec').value*1000)};draw();quote();t=setInterval(quote,5000);
+</script></body></html>
