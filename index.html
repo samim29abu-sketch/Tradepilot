@@ -1,28 +1,91 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080d18"><title>TradePilot Live Paper</title>
-<style>
-body{margin:0;background:#080d18;color:#eef3ff;font:16px system-ui;padding:15px}main{max-width:850px;margin:auto}.card{background:#111a2c;border:1px solid #293653;border-radius:18px;padding:15px;margin:12px 0}h1{margin:0}.muted{color:#9aa8c2}.price{font-size:36px;font-weight:800}select,input,button{width:100%;box-sizing:border-box;padding:13px;margin:5px 0;border-radius:11px;background:#0a1120;color:white;border:1px solid #344363;font-size:16px}button{background:#4169e1;border:0;font-weight:700}.red{background:#7b2435}.green{color:#37d39a}.loss{color:#ff647c}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{background:#0a1120;padding:10px;border-radius:10px}.stat b{display:block;margin-top:4px}.chart{height:300px}.notice{border-left:4px solid #ffd166;padding:10px;background:#1d2535;font-size:13px}@media(max-width:600px){.grid,.stats{grid-template-columns:1fr}.chart{height:260px}}
-</style></head><body><main>
-<h1>TradePilot</h1><div class="muted">Live market view • Paper trading only</div>
-<div class="card"><b>REAL MONEY: OFF</b><div style="margin-top:15px"><span id="name">NIFTY 50</span><div id="price" class="price">—</div><div id="chg">—</div><small id="status" class="muted">Connecting…</small></div>
-<div class="grid"><div><label>Instrument</label><select id="sym"><option value="^NSEI">NIFTY 50</option><option value="^NSEBANK">NIFTY BANK</option><option value="RELIANCE.NS">RELIANCE</option><option value="INFY.NS">INFOSYS</option><option value="TCS.NS">TCS</option><option value="SBIN.NS">SBI</option></select></div><div><label>Refresh</label><select id="sec"><option>5</option><option>10</option><option>20</option></select></div></div></div>
-<div class="card"><div class="notice"><b>Paper only.</b> The public quote feed may be delayed. No broker orders are sent and no real money is used.</div><div class="chart"><iframe id="tv" style="width:100%;height:100%;border:0" src="https://www.tradingview.com/widgetembed/?symbol=NSE%3ANIFTY&interval=5&theme=dark&style=1&timezone=Asia%2FKolkata&withdateranges=1&hideideas=1"></iframe></div></div>
-<div class="card"><h3>Paper trade</h3><div class="grid"><div><label>Side</label><select id="side"><option>BUY</option><option>SELL</option></select></div><div><label>Quantity</label><input id="qty" type="number" value="1" min="1"></div><div><label>Stop-loss</label><input id="sl" type="number" step=".05" placeholder="price"></div><div><label>Target</label><input id="tp" type="number" step=".05" placeholder="price"></div></div><button id="open">Open paper trade at current price</button><button id="close" class="red" style="display:none">Close at current price</button></div>
-<div class="card"><div class="stats"><div class="stat">Equity<b id="eq">₹1,00,000</b></div><div class="stat">Open P&L<b id="pnl">₹0</b></div><div class="stat">Wins<b id="wins">0</b></div><div class="stat">Losses<b id="losses">0</b></div></div><p id="pos" class="muted">No open position</p></div>
-<div class="card"><h3>History</h3><div id="hist"></div><button id="reset">Reset paper account</button></div>
-</main>
-<script>
-const $=x=>document.getElementById(x);let S=JSON.parse(localStorage.tpLive||'null')||{eq:100000,w:0,l:0,h:[],o:null},p=null,t;
-const money=x=>'₹'+Number(x||0).toLocaleString('en-IN',{maximumFractionDigits:2});
-function save(){localStorage.tpLive=JSON.stringify(S)}function draw(){ $('eq').textContent=money(S.eq);$('wins').textContent=S.w;$('losses').textContent=S.l;
-if(S.o){let z=S.o.side==='BUY'?(p-S.o.e)*S.o.q:(S.o.e-p)*S.o.q;$('pnl').textContent=money(z);$('pnl').className=z>=0?'green':'loss';$('pos').textContent=`${S.o.side} ${S.o.q} @ ${money(S.o.e)} | SL ${money(S.o.sl)} | Target ${money(S.o.tp)} | Live ${money(p)}`;$('open').style.display='none';$('close').style.display='block'}else{$('pnl').textContent='₹0';$('pnl').className='';$('pos').textContent='No open position';$('open').style.display='block';$('close').style.display='none'}
-$('hist').innerHTML=S.h.slice().reverse().map(x=>`<div style="padding:8px 0;border-bottom:1px solid #293653">${x.side} ${money(x.e)} → ${money(x.x)} : <b class="${x.z>=0?'green':'loss'}">${money(x.z)}</b> (${x.r})</div>`).join('')}
-async function quote(){let s=$('sym').value,u='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(s)+'?range=1d&interval=1m',urls=['https://api.allorigins.win/raw?url='+encodeURIComponent(u),'https://corsproxy.io/?url='+encodeURIComponent(u)],d;
-for(let a of urls)try{let r=await fetch(a,{cache:'no-store'});if(r.ok){d=await r.json();if(d.chart?.result?.[0])break}}catch(e){}
-if(!d?.chart?.result?.[0]){$('status').textContent='Quote unavailable — retrying';return}let m=d.chart.result[0].meta;p=Number(m.regularMarketPrice||m.previousClose);let pc=Number(m.previousClose||p),c=p-pc;$('name').textContent=m.longName||m.shortName||s;$('price').textContent=money(p);$('chg').textContent=(c>=0?'+':'')+c.toFixed(2)+' ('+(c/pc*100).toFixed(2)+'%)';$('chg').className=c>=0?'green':'loss';$('status').textContent='Updated '+new Date().toLocaleTimeString();exitCheck();draw()}
-function exitCheck(){if(!S.o||p==null)return;let o=S.o,hit=(o.side==='BUY'&&p<=o.sl)?'STOP LOSS':(o.side==='BUY'&&p>=o.tp)?'TARGET':(o.side==='SELL'&&p>=o.sl)?'STOP LOSS':(o.side==='SELL'&&p<=o.tp)?'TARGET':null;if(hit)closeTrade(hit)}
-function closeTrade(r='MANUAL'){if(!S.o||p==null)return;let o=S.o,z=o.side==='BUY'?(p-o.e)*o.q:(o.e-p)*o.q;S.eq+=z;z>=0?S.w++:S.l++;S.h.push({side:o.side,e:o.e,x:p,z,r});S.o=null;save();draw()}
-$('open').onclick=()=>{if(p==null)return alert('Wait for the live quote.');let sl=+$('sl').value,tp=+$('tp').value,q=+$('qty').value,side=$('side').value;if(!sl||!tp||!q)return alert('Enter stop-loss, target and quantity.');if(side==='BUY'&&!(sl<p&&tp>p))return alert('For BUY, SL must be below price and target above price.');if(side==='SELL'&&!(sl>p&&tp<p))return alert('For SELL, SL must be above price and target below price.');S.o={side,e:p,sl,tp,q};save();draw()};
-$('close').onclick=()=>closeTrade();$('reset').onclick=()=>{if(confirm('Reset paper account?')){S={eq:100000,w:0,l:0,h:[],o:null};save();draw()}};
-$('sym').onchange=()=>{let m={'^NSEI':'NSE%3ANIFTY','^NSEBANK':'NSE%3ANIFTYBANK','RELIANCE.NS':'NSE%3ARELIANCE','INFY.NS':'NSE%3AINFY','TCS.NS':'NSE%3ATCS','SBIN.NS':'NSE%3ASBIN'};$('tv').src='https://www.tradingview.com/widgetembed/?symbol='+m[$('sym').value]+'&interval=5&theme=dark&style=1&timezone=Asia%2FKolkata&withdateranges=1&hideideas=1';quote()};
-$('sec').onchange=()=>{clearInterval(t);t=setInterval(quote,+$('sec').value*1000)};draw();quote();t=setInterval(quote,5000);
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071019">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TradePilot">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<title>TradePilot v3 — Live Options Paper Terminal</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><h1>TradePilot</h1><small>Live market • ₹1,00,000 paper account • NIFTY & BANKNIFTY options</small></div>
+    <div id="liveBadge" class="pill off">Angel One: not connected</div>
+  </div>
+
+  <div class="grid">
+    <section class="card c12">
+      <div class="account">
+        <div class="stat"><span>Paper Equity</span><b id="equity">₹1,00,000</b></div>
+        <div class="stat"><span>Available</span><b id="available">₹1,00,000</b></div>
+        <div class="stat"><span>Open P&amp;L</span><b id="openPnl">₹0</b></div>
+        <div class="stat"><span>Realized P&amp;L</span><b id="realized">₹0</b></div>
+      </div>
+    </section>
+
+    <section class="card c8">
+      <div class="underlying">
+        <div id="niftyCard" class="u active" data-u="NIFTY"><small>NIFTY 50</small><div class="px" id="niftyPx">—</div><div id="niftyChg" class="mini muted">Waiting for Angel One</div></div>
+        <div id="bankCard" class="u" data-u="BANKNIFTY"><small>NIFTY BANK</small><div class="px" id="bankPx">—</div><div id="bankChg" class="mini muted">Waiting for Angel One</div></div>
+      </div>
+      <div style="margin-top:10px" class="row"><div><label>Expiry</label><select id="expiry"><option value="">Connect Angel One first</option></select></div><div style="max-width:135px"><label>Chain width</label><select id="width"><option value="5">±5 strikes</option><option value="8" selected>±8 strikes</option><option value="12">±12 strikes</option></select></div></div>
+      <div class="chain" id="chain"><div class="empty">Option chain will appear here after the private Angel One backend is connected.</div></div>
+    </section>
+
+    <section class="card c4">
+      <h3>Order Ticket</h3>
+      <div class="tabs"><button id="buyTab" class="tab buy active">BUY</button><button id="sellTab" class="tab sell">SELL</button></div>
+      <div class="ticket">
+        <div class="full"><label>Selected option</label><div id="selectedContract" class="symbolbox muted">Tap a CE or PE in the option chain</div></div>
+        <div><label>Quantity</label><input id="qty" type="number" min="1" inputmode="numeric" placeholder="e.g. 75"></div>
+        <div><label>Order</label><select id="orderType"><option>MARKET</option><option>LIMIT</option></select></div>
+        <div id="limitBox" style="display:none"><label>Limit price</label><input id="limitPrice" type="number" step="0.05" inputmode="decimal"></div>
+        <div><label>Stop loss</label><input id="sl" type="number" step="0.05" inputmode="decimal" placeholder="optional"></div>
+        <div><label>Target</label><input id="target" type="number" step="0.05" inputmode="decimal" placeholder="optional"></div>
+        <button id="placeOrder" class="full buy" disabled>BUY — PAPER ORDER</button>
+      </div>
+      <div class="mini muted" style="margin-top:8px">No broker order is transmitted. Execution is simulated against Angel One market prices.</div>
+    </section>
+
+    <section class="card c6">
+      <h3>Automation Console</h3>
+      <textarea id="command" placeholder="Example: BUY NIFTY 25000 CE QTY 75 SL 110 TARGET 160"></textarea>
+      <button id="runCommand" class="primary" style="width:100%;margin-top:7px">Parse & Arm Paper Trade</button>
+      <div id="commandResult" class="cmdExamples">Commands: <code>BUY NIFTY 25000 CE QTY 75 SL 110 TARGET 160</code> • <code>BUY BANKNIFTY 54000 PE ABOVE 205 QTY 30 SL 175 TARGET 260</code> • <code>EXIT ALL</code></div>
+    </section>
+
+    <section class="card c6">
+      <h3>Armed Rules</h3>
+      <div id="rules"><div class="empty">No automation rules armed.</div></div>
+    </section>
+
+    <section class="card c12">
+      <h3>Open Positions</h3>
+      <div id="positions" class="positions"><div class="empty">No open positions.</div></div>
+    </section>
+
+    <section class="card c12">
+      <h3>Order / Trade Book</h3>
+      <div style="overflow:auto"><table class="table"><thead><tr><th>Time</th><th>Instrument</th><th>Side</th><th>Qty</th><th>Price</th><th>Status</th><th>P&amp;L</th></tr></thead><tbody id="orders"><tr><td colspan="7" class="empty">No paper orders yet.</td></tr></tbody></table></div>
+    </section>
+
+    <section class="card c12" id="settings">
+      <h3>Angel One Connection</h3>
+      <div id="connectionNotice" class="notice">The phone app is safely hosted on GitHub Pages. Your Angel One credentials must stay on a private backend server — never in this public GitHub repository.</div>
+      <div class="row" style="margin-top:10px"><div><label>Private backend HTTPS URL</label><input id="backendUrl" placeholder="https://your-private-tradepilot-backend.example"></div><div><label>App access key</label><input id="accessKey" type="password" autocomplete="off" placeholder="private key stored only on this phone"></div><div style="max-width:150px;align-self:end"><button id="saveBackend" class="primary" style="width:100%">Connect</button></div></div>
+      <div class="row" style="margin-top:6px"><button id="refreshChain" class="ghost">Refresh option chain</button><button id="resetAccount" class="ghost">Reset paper ₹1L account</button></div>
+      <p class="mini muted">The backend included in the repository uses Angel One SmartAPI only for market data. It does not contain a real-money <code>placeOrder</code> route.</p>
+    </section>
+  </div>
+</div>
+
+<div class="bottom"><button id="installBtn" class="primary install">Install TradePilot</button><button id="goPositions" class="ghost">Positions</button><button id="goConsole" class="ghost">Automation</button><button id="goSettings" class="ghost">Connection</button></div>
+
+<script src="app.js"></script>
+</body></html>

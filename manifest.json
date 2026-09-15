@@ -1,17 +1,15 @@
 {
-  "name": "TradePilot Paper Trading",
+  "name": "TradePilot — Live Options Paper Terminal",
   "short_name": "TradePilot",
-  "description": "Stage 1 paper-trading simulator with stop-loss and take-profit.",
-  "start_url": "./index.html",
+  "description": "Installable NIFTY and BANKNIFTY options paper-trading terminal using Angel One market data through a private backend.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0b1020",
-  "theme_color": "#0b1020",
+  "orientation": "portrait-primary",
+  "background_color": "#061019",
+  "theme_color": "#071019",
+  "categories": ["finance", "productivity"],
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
   ]
 }
