@@ -24,8 +24,47 @@ async function cancelRule(id){try{await api('/api/paper/rule/cancel',{method:'PO
 async function ping(){try{const d=await api('/api/config');M.connected=!!d.configured;if(!M.connected){drawConnection('Backend reached, but Angel One credentials are not configured on the private server.');return}await Promise.all([loadMarket(),state()]);await loadExpiries();drawAll()}catch(e){M.connected=false;drawAll();drawConnection('Backend connection failed: '+e.message)} }
 async function loadMarket(){const d=await api('/api/underlyings');M.underlyings=d.data||{};drawUnderlyings()}
 async function loadExpiries(){const d=await api('/api/expiries?underlying='+encodeURIComponent(C.selectedU));const old=C.selectedExpiry;$('expiry').innerHTML=(d.expiries||[]).map(x=>`<option value="${x}">${x}</option>`).join('')||'<option value="">No expiries</option>';C.selectedExpiry=(d.expiries||[]).includes(old)?old:(d.expiries||[])[0]||'';$('expiry').value=C.selectedExpiry;saveCfg();if(C.selectedExpiry)await loadChain()}
-async function loadChain(){if(!M.connected||!C.selectedExpiry)return;const root=$('chain');root.innerHTML='<div class="empty"><span class="spinner"></span> Loading Angel One option prices…</div>';try{const d=await api('/api/options?underlying='+encodeURIComponent(C.selectedU)+'&expiry='+encodeURIComponent(C.selectedExpiry)+'&width='+encodeURIComponent($('width').value));M.chain=d.contracts||[];if(d.spot)M.underlyings[C.selectedU]=d.spot;drawChain();drawUnderlyings()}catch(e){root.innerHTML='<div class="empty redtxt">'+e.message+'</div>'}}
-async function tick(){if(!M.connected)return;try{await Promise.all([loadMarket(),state()]);if(C.selectedExpiry)await loadChain()}catch{}}
+let chainRequest=0,chainLoading=false,tickRunning=false;
+async function loadChain(background=false){
+  background=background===true;
+  if(!M.connected||!C.selectedExpiry||(background&&chainLoading))return;
+  const root=$('chain'),u=C.selectedU,expiry=C.selectedExpiry,width=$('width').value;
+  const request=++chainRequest;
+  chainLoading=true;
+  const current=()=>request===chainRequest&&u===C.selectedU&&expiry===C.selectedExpiry&&width===$('width').value;
+  if(!background)root.innerHTML='<div class="empty"><span class="spinner"></span> Loading Angel One option prices…</div>';
+  try{
+    const d=await api('/api/options?underlying='+encodeURIComponent(u)+'&expiry='+encodeURIComponent(expiry)+'&width='+encodeURIComponent(width));
+    if(!current())return;
+    const fresh=d.contracts||[];
+    if(background&&root.querySelector('.contract')){
+      // Keep the visible strikes and their tap targets fixed until a deliberate reload.
+      const quotes=new Map(fresh.map(c=>[String(c.token),c]));
+      M.chain=M.chain.map(c=>quotes.get(String(c.token))||c);
+      root.querySelectorAll('.contract').forEach(el=>{
+        const q=quotes.get(el.dataset.token),price=el.querySelector('.ltp');
+        if(price)price.textContent=q?INR(q.ltp):'—';
+      });
+    }else{M.chain=fresh;drawChain();}
+    if(M.selected){
+      M.selected=fresh.find(c=>String(c.token)===String(M.selected.token))||null;
+      drawSelected();
+    }
+    if(d.spot)M.underlyings[u]=d.spot;
+    drawUnderlyings();
+    root.title='';
+  }catch(e){
+    if(!current())return;
+    if(background){root.title='Price refresh failed: '+e.message;}
+    else{root.textContent='Unable to load option prices: '+e.message;}
+  }finally{if(request===chainRequest)chainLoading=false;}
+}
+async function tick(){
+  if(!M.connected||tickRunning)return;
+  tickRunning=true;
+  try{await Promise.allSettled([loadMarket(),state(),C.selectedExpiry?loadChain(true):Promise.resolve()]);}
+  finally{tickRunning=false;}
+}
 async function selectUnderlying(u){C.selectedU=u;M.selected=null;saveCfg();drawAll();if(M.connected)await loadExpiries()}
 $('niftyCard').onclick=()=>selectUnderlying('NIFTY');$('bankCard').onclick=()=>selectUnderlying('BANKNIFTY');
 $('expiry').onchange=()=>{C.selectedExpiry=$('expiry').value;saveCfg();loadChain()};$('width').onchange=loadChain;
@@ -40,3 +79,4 @@ $('goPositions').onclick=()=>document.getElementById('positions').scrollIntoView
 let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('installBtn').style.display='block'});$('installBtn').onclick=async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installBtn').style.display='none'};
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 drawAll();updateOrderButton();if(C.backendUrl)ping();M.timer=setInterval(tick,3000);
+
