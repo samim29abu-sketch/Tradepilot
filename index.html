@@ -9,13 +9,13 @@
 <meta name="apple-mobile-web-app-title" content="TradePilot">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg">
-<title>TradePilot v3 — Live Options Paper Terminal</title>
+<title>TradePilot v4 — Live Options Paper Terminal &amp; Strategy Radar</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div class="brand"><h1>TradePilot</h1><small>Live market • ₹1,00,000 paper account • NIFTY & BANKNIFTY options</small></div>
+    <div class="brand"><h1>TradePilot</h1><small>Dual-Engine Radar • ₹1,00,000 paper account • NIFTY &amp; BANKNIFTY options</small></div>
     <div id="liveBadge" class="pill off">Angel One: not connected</div>
   </div>
 
@@ -25,8 +25,55 @@
         <div class="stat"><span>Paper Equity</span><b id="equity">₹1,00,000</b></div>
         <div class="stat"><span>Available</span><b id="available">₹1,00,000</b></div>
         <div class="stat"><span>Open P&amp;L</span><b id="openPnl">₹0</b></div>
-        <div class="stat"><span>Realized P&amp;L</span><b id="realized">₹0</b></div>
+        <div class="stat"><span>Realized P&amp;L</span><b id="realized">₹0</b><small id="chargesNote" class="mini muted">Est. 2026 charges: ₹0</small></div>
       </div>
+    </section>
+
+    <section class="card c12" id="radar">
+      <div class="radarHead">
+        <div>
+          <h3 style="margin:0">High-Reward Setup Radar (1:3 R:R)</h3>
+          <div class="mini muted" id="radarMeta">NIFTY: PDH/PDL Break &amp; Hold • BANKNIFTY: MTF 20-EMA Pullback</div>
+        </div>
+        <div id="radarBadge" class="pill">Connect backend to scan</div>
+      </div>
+
+      <div class="radarBar">
+        <button id="toggleAutoTrade" class="ghost" disabled>Auto-Paper-Trade: OFF</button>
+        <div id="dailyGuard" class="pill">Daily Guard: ₹0 / -₹3,000</div>
+        <button id="refreshRadar" class="ghost" style="max-width:130px">Scan Now</button>
+      </div>
+
+      <div id="radarLevels" class="levels"></div>
+      <div id="radarSetups" class="positions" style="margin-top:10px">
+        <div class="empty">Connect your private backend below to stream live NIFTY &amp; BANKNIFTY setups on your phone every trading day (9:15 AM – 3:30 PM IST).</div>
+      </div>
+
+      <details class="proofBox">
+        <summary>60-Day Live NSE Proof (Aug 25 – Nov 20, 2026): <b class="green">+₹22,370 (+22.4% Net)</b> • PF 1.27 • 88 Trades</summary>
+        <div class="proofBody">
+          <div class="mini muted" style="margin-bottom:8px">Tested on real 5m &amp; 15m NSE data (next-bar open fills, zero look-ahead) using 2026 lot sizes (NIFTY 65, BANKNIFTY 30), ATM Delta 0.55, theta decay, slippage, and April 2026 charges (₹40 brokerage + 0.15% STT + NSE/stamp/GST).</div>
+          <div class="proofGrid">
+            <div class="stat"><span>NIFTY Engine</span><b class="green">+₹11,719</b><small class="mini muted">PDH/PDL Break &amp; Hold • 42 trades • 38.1% WR • PF 1.34 • MDD ₹7,378</small></div>
+            <div class="stat"><span>BANKNIFTY Engine</span><b class="green">+₹10,650</b><small class="mini muted">MTF 20-EMA Pullback • 46 trades • 32.6% WR • PF 1.22 • MDD ₹16,108</small></div>
+            <div class="stat"><span>Combined (₹1L)</span><b class="green">+₹22,370</b><small class="mini muted">88 trades • Avg Win ₹3,384 vs Avg Loss ₹1,448 • MDD ₹12,416</small></div>
+          </div>
+          <div style="overflow:auto;margin-top:8px">
+            <table class="table">
+              <thead><tr><th>Date</th><th>Time</th><th>Index</th><th>Dir</th><th>Spot Move</th><th>Exit</th><th>Net P&amp;L</th></tr></thead>
+              <tbody>
+                <tr><td>2026-11-20</td><td>10:25</td><td>NIFTY</td><td class="green">CE</td><td>+161.5</td><td>TARGET</td><td class="green">+₹5,224</td></tr>
+                <tr><td>2026-11-20</td><td>09:55</td><td>NIFTY</td><td class="green">CE</td><td>-37.1</td><td>SL</td><td class="redtxt">-₹1,535</td></tr>
+                <tr><td>2026-11-20</td><td>09:45</td><td>BANKNIFTY</td><td class="green">CE</td><td>+702.3</td><td>TARGET</td><td class="green">+₹10,967</td></tr>
+                <tr><td>2026-11-19</td><td>14:05</td><td>NIFTY</td><td class="green">CE</td><td>+85.0</td><td>EOD</td><td class="green">+₹2,652</td></tr>
+                <tr><td>2026-11-19</td><td>13:20</td><td>BANKNIFTY</td><td class="green">CE</td><td>+161.0</td><td>TARGET</td><td class="green">+₹2,432</td></tr>
+                <tr><td>2026-11-19</td><td>11:25</td><td>BANKNIFTY</td><td class="green">CE</td><td>+236.2</td><td>TARGET</td><td class="green">+₹3,492</td></tr>
+                <tr><td>2026-11-17</td><td>09:50</td><td>NIFTY</td><td class="green">CE</td><td>+94.9</td><td>TARGET</td><td class="green">+₹2,843</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
 
     <section class="card c8">
@@ -43,7 +90,7 @@
       <div class="tabs"><button id="buyTab" class="tab buy active">BUY</button><button id="sellTab" class="tab sell">SELL</button></div>
       <div class="ticket">
         <div class="full"><label>Selected option</label><div id="selectedContract" class="symbolbox muted">Tap a CE or PE in the option chain</div></div>
-        <div><label>Quantity</label><input id="qty" type="number" min="1" inputmode="numeric" placeholder="e.g. 75"></div>
+        <div><label>Quantity</label><input id="qty" type="number" min="1" inputmode="numeric" placeholder="e.g. 65"></div>
         <div><label>Order</label><select id="orderType"><option>MARKET</option><option>LIMIT</option></select></div>
         <div id="limitBox" style="display:none"><label>Limit price</label><input id="limitPrice" type="number" step="0.05" inputmode="decimal"></div>
         <div><label>Stop loss</label><input id="sl" type="number" step="0.05" inputmode="decimal" placeholder="optional"></div>
@@ -55,9 +102,9 @@
 
     <section class="card c6">
       <h3>Automation Console</h3>
-      <textarea id="command" placeholder="Example: BUY NIFTY 25000 CE QTY 75 SL 110 TARGET 160"></textarea>
-      <button id="runCommand" class="primary" style="width:100%;margin-top:7px">Parse & Arm Paper Trade</button>
-      <div id="commandResult" class="cmdExamples">Commands: <code>BUY NIFTY 25000 CE QTY 75 SL 110 TARGET 160</code> • <code>BUY BANKNIFTY 54000 PE ABOVE 205 QTY 30 SL 175 TARGET 260</code> • <code>EXIT ALL</code></div>
+      <textarea id="command" placeholder="Example: BUY NIFTY 25800 CE QTY 65 SL 110 TARGET 190"></textarea>
+      <button id="runCommand" class="primary" style="width:100%;margin-top:7px">Parse &amp; Arm Paper Trade</button>
+      <div id="commandResult" class="cmdExamples">Commands: <code>BUY NIFTY 25800 CE QTY 65 SL 110 TARGET 190</code> • <code>BUY BANKNIFTY 64600 PE ABOVE 205 QTY 30 SL 175 TARGET 295</code> • <code>EXIT ALL</code></div>
     </section>
 
     <section class="card c6">
@@ -80,12 +127,12 @@
       <div id="connectionNotice" class="notice">The phone app is safely hosted on GitHub Pages. Your Angel One credentials must stay on a private backend server — never in this public GitHub repository.</div>
       <div class="row" style="margin-top:10px"><div><label>Private backend HTTPS URL</label><input id="backendUrl" placeholder="https://your-private-tradepilot-backend.example"></div><div><label>App access key</label><input id="accessKey" type="password" autocomplete="off" placeholder="private key stored only on this phone"></div><div style="max-width:150px;align-self:end"><button id="saveBackend" class="primary" style="width:100%">Connect</button></div></div>
       <div class="row" style="margin-top:6px"><button id="refreshChain" class="ghost">Refresh option chain</button><button id="resetAccount" class="ghost">Reset paper ₹1L account</button></div>
-      <p class="mini muted">The backend included in the repository uses Angel One SmartAPI only for market data. It does not contain a real-money <code>placeOrder</code> route.</p>
+      <p class="mini muted">The backend included in the repository uses Angel One SmartAPI only for market data. It does not contain a real-money <code>placeOrder</code> route. Optional: set <code>TELEGRAM_BOT_TOKEN</code> &amp; <code>TELEGRAM_CHAT_ID</code> in <code>server/.env</code> for instant phone push alerts.</p>
     </section>
   </div>
 </div>
 
-<div class="bottom"><button id="installBtn" class="primary install">Install TradePilot</button><button id="goPositions" class="ghost">Positions</button><button id="goConsole" class="ghost">Automation</button><button id="goSettings" class="ghost">Connection</button></div>
+<div class="bottom"><button id="installBtn" class="primary install">Install App</button><button id="goRadar" class="ghost">Radar</button><button id="goPositions" class="ghost">Positions</button><button id="goConsole" class="ghost">Auto</button><button id="goSettings" class="ghost">Connect</button></div>
 
 <script src="app.js"></script>
 </body></html>

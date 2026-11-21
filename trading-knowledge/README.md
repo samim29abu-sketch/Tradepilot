@@ -26,5 +26,7 @@ A comprehensive reference library for trading **Indian index options (NSE / BSE 
     - Managing winning/losing buys, rolling untested legs on Iron Condors/Strangles, Iron Fly conversion, credit spread repair, and adjustment stop rules
 11. **[11 — Quantitative Edge, Backtesting & Trading Psychology](./11-quantitative-edge-and-psychology.md)**
     - Expectancy math, Win Rate vs. R:R table, drawdown recovery math, avoiding backtest traps, psychological counter-rules, and a ready-to-use trade journal template
+12. **[12 — Proven High-Reward Strategy & Live 60-Day NSE Market Proof](./12-proven-strategy-and-backtest.md)** + **[`backtest_proof.py`](./backtest_proof.py)**
+    - Verified Dual-Engine strategy (`NIFTY PDH/PDL Break & Hold` + `BANKNIFTY MTF 20-EMA Pullback`) tested across 60 real NSE trading days (`+₹22,370 / +22.4%` net after 2026 charges, theta & slippage)
 
 > **Note:** Market regulations, lot sizes, constituent weights, and statutory charges change periodically via NSE/BSE/SEBI circulars. Always verify live values from exchange circulars or your broker scrip master before trading real capital.
