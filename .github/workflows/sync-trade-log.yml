@@ -1,0 +1,53 @@
+name: Auto-Log TradePilot Paper Trades
+
+on:
+  schedule:
+    # Mon-Fri 09:30 to 15:00 IST (04:00 to 09:30 UTC) every 30 min for intraday trade closes
+    - cron: '0,30 4-9 * * 1-5'
+    # Mon-Fri 15:16 IST (09:46 UTC) right after 15:10 EOD exit + 15:15 daily session summary
+    - cron: '46 9 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      force_session:
+        description: 'Record today session summary even before 15:15 IST'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-trade-log
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Sync live paper trades from TradePilot backend
+        id: sync
+        env:
+          TRADEPILOT_APP_KEY: ${{ secrets.TRADEPILOT_APP_KEY }}
+          TRADEPILOT_BACKEND_URL: ${{ secrets.TRADEPILOT_BACKEND_URL }}
+          FORCE_SESSION: ${{ inputs.force_session == true && '1' || '0' }}
+        run: python3 scripts/sync_trade_log.py
+
+      - name: Commit updated trade journal if changed
+        env:
+          COMMIT_MSG: ${{ steps.sync.outputs.commit_message }}
+        run: |
+          if [ -z "$(git status --porcelain trading-knowledge/live-trades.json trading-knowledge/live-proof-journal.md)" ]; then
+            echo "Trade log already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add trading-knowledge/live-trades.json trading-knowledge/live-proof-journal.md
+          git commit -m "${COMMIT_MSG:-Auto-log TradePilot trade journal}"
+          git pull --rebase origin main
+          git push origin main

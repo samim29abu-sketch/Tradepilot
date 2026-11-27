@@ -25,6 +25,15 @@ The GitHub Pages frontend is public static code, so **Angel One credentials must
 
 The backend intentionally has **no Angel One `placeOrder` route**. It reads market data only. Real-money execution is never triggered.
 
+## Automatic GitHub Trade Log (No Lightsail Changes Required)
+
+The GitHub Actions workflow [`.github/workflows/sync-trade-log.yml`](./.github/workflows/sync-trade-log.yml) runs [`scripts/sync_trade_log.py`](./scripts/sync_trade_log.py) automatically Mon–Fri (every 30 min during `09:30–15:00 IST` plus a `15:16 IST` daily session summary, including 0-trade days) and commits updates to [`trading-knowledge/live-proof-journal.md`](./trading-knowledge/live-proof-journal.md) and [`trading-knowledge/live-trades.json`](./trading-knowledge/live-trades.json).
+
+One-time setup on GitHub (zero SSH or server reinstall needed):
+1. Go to **Repo Settings → Secrets and variables → Actions → New repository secret**.
+2. Add **`TRADEPILOT_APP_KEY`** = your existing TradePilot App Access Key. *(Optional: add `TRADEPILOT_BACKEND_URL` if you ever change the server URL.)*
+3. Go to **Actions → Auto-Log TradePilot Paper Trades → Run workflow** to sync immediately.
+
 ## Updating your private Lightsail backend
 
 On your Lightsail host (as `admin`, not `sudo`):
@@ -38,7 +47,7 @@ Required server-only `.env` fields:
 - `ANGEL_API_KEY`, `ANGEL_CLIENT_CODE`, `ANGEL_PIN`, `ANGEL_TOTP_SECRET`, `ANGEL_PUBLIC_IP`
 - `FRONTEND_ORIGIN=https://samim29abu-sketch.github.io`
 - `APP_ACCESS_TOKEN` (set during installer prompt; enter once in the phone app Connection screen)
-- *(Optional)* `GITHUB_LOG_TOKEN` (Fine-Grained GitHub PAT scoped strictly to **Contents: Read and write** on `samim29abu-sketch/Tradepilot`; prompted during installer to enable automatic trade & 15:15 IST session logging)
+- *(Optional)* `GITHUB_LOG_TOKEN` (Fine-Grained GitHub PAT scoped strictly to **Contents: Read and write** on `samim29abu-sketch/Tradepilot`; only needed if you want instant sub-second server push in addition to GitHub Actions)
 - *(Optional)* `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` for instant Telegram phone alerts when a live setup fires or a trade closes.
 
 ## Install on Phone (Android / iPhone)
