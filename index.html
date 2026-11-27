@@ -118,7 +118,14 @@
     </section>
 
     <section class="card c12">
-      <h3>Order / Trade Book</h3>
+      <div class="radarHead" style="margin-bottom:8px">
+        <h3 style="margin:0">Order / Trade Book</h3>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span id="journalBadge" class="pill">Auto-Log: —</span>
+          <button id="syncJournal" class="ghost" style="padding:7px 10px;font-size:12px" disabled>Sync GitHub</button>
+          <button id="copyLog" class="ghost" style="padding:7px 10px;font-size:12px">Copy Log</button>
+        </div>
+      </div>
       <div style="overflow:auto"><table class="table"><thead><tr><th>Instrument / Time</th><th>Side</th><th>Price &amp; Qty</th><th>Status / P&amp;L</th></tr></thead><tbody id="orders"><tr><td colspan="4" class="empty">No paper orders yet.</td></tr></tbody></table></div>
     </section>
 
@@ -127,7 +134,7 @@
       <div id="connectionNotice" class="notice">The phone app is safely hosted on GitHub Pages. Your Angel One credentials must stay on a private backend server — never in this public GitHub repository.</div>
       <div class="row" style="margin-top:10px"><div><label>Private backend HTTPS URL</label><input id="backendUrl" placeholder="https://your-private-tradepilot-backend.example"></div><div><label>App access key</label><input id="accessKey" type="password" autocomplete="off" placeholder="private key stored only on this phone"></div><div style="max-width:150px;align-self:end"><button id="saveBackend" class="primary" style="width:100%">Connect</button></div></div>
       <div class="row" style="margin-top:6px"><button id="refreshChain" class="ghost">Refresh option chain</button><button id="resetAccount" class="ghost">Reset paper ₹1L account</button></div>
-      <p class="mini muted">The backend included in the repository uses Angel One SmartAPI only for market data. It does not contain a real-money <code>placeOrder</code> route. Optional: set <code>TELEGRAM_BOT_TOKEN</code> &amp; <code>TELEGRAM_CHAT_ID</code> in <code>server/.env</code> for instant phone push alerts.</p>
+      <p class="mini muted">The backend included in the repository uses Angel One SmartAPI only for market data. It does not contain a real-money <code>placeOrder</code> route. Optional server <code>.env</code> keys: <code>GITHUB_LOG_TOKEN</code> (auto-syncs closed trades + 15:15 IST summary to GitHub) and <code>TELEGRAM_BOT_TOKEN</code> / <code>TELEGRAM_CHAT_ID</code> (instant phone alerts).</p>
     </section>
   </div>
 </div>

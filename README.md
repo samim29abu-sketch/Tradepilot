@@ -10,7 +10,8 @@ TradePilot v4 is an installable phone-first PWA for **paper trading NIFTY and BA
   - **BANKNIFTY Engine:** `MTF 20-EMA Trend Pullback` (skips 11:30–13:15 midday chop, 1:3 R:R + Breakeven trail at 1.5R)
   - **Live Key Levels:** 15m Bias, PDH/PDL/PDC, 15m ORB, 5m EMA 20, ATR(14), and ATM Combined Straddle (`CE + PE`).
   - **1-Tap Arm** from your phone OR optional **Auto-Paper-Trade** mode with a `-₹3,000` daily max-loss kill switch, automatic breakeven trailing stop, and 15:10 IST intraday square-off.
-  - **Optional Telegram Phone Alerts** whenever a live high-reward setup triggers.
+  - **Automatic GitHub Trade Journal Sync:** Automatically commits every closed paper trade and a daily **15:15 IST session summary** (including 0-trade days) to [`trading-knowledge/live-proof-journal.md`](./trading-knowledge/live-proof-journal.md) and [`trading-knowledge/live-trades.json`](./trading-knowledge/live-trades.json), plus a 1-tap **Sync GitHub** / **Copy Log** button in the phone Order Book.
+  - **Optional Telegram Phone Alerts** whenever a live high-reward setup triggers or a trade closes.
 - **Live 60-Day NSE Proof** documented in [`trading-knowledge/12-proven-strategy-and-backtest.md`](./trading-knowledge/12-proven-strategy-and-backtest.md) and reproducible via `python3 trading-knowledge/backtest_proof.py`.
 - **Manual Paper Trading & Command Automation:**
   - `BUY NIFTY 25800 CE QTY 65 SL 110 TARGET 190`
@@ -37,7 +38,8 @@ Required server-only `.env` fields:
 - `ANGEL_API_KEY`, `ANGEL_CLIENT_CODE`, `ANGEL_PIN`, `ANGEL_TOTP_SECRET`, `ANGEL_PUBLIC_IP`
 - `FRONTEND_ORIGIN=https://samim29abu-sketch.github.io`
 - `APP_ACCESS_TOKEN` (set during installer prompt; enter once in the phone app Connection screen)
-- *(Optional)* `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` for instant Telegram phone alerts when a live setup fires.
+- *(Optional)* `GITHUB_LOG_TOKEN` (Fine-Grained GitHub PAT scoped strictly to **Contents: Read and write** on `samim29abu-sketch/Tradepilot`; prompted during installer to enable automatic trade & 15:15 IST session logging)
+- *(Optional)* `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` for instant Telegram phone alerts when a live setup fires or a trade closes.
 
 ## Install on Phone (Android / iPhone)
 
