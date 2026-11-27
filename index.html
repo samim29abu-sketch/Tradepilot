@@ -133,6 +133,7 @@
       <h3>Angel One Connection</h3>
       <div id="connectionNotice" class="notice">The phone app is safely hosted on GitHub Pages. Your Angel One credentials must stay on a private backend server — never in this public GitHub repository.</div>
       <div class="row" style="margin-top:10px"><div><label>Private backend HTTPS URL</label><input id="backendUrl" placeholder="https://your-private-tradepilot-backend.example"></div><div><label>App access key</label><input id="accessKey" type="password" autocomplete="off" placeholder="private key stored only on this phone"></div><div style="max-width:150px;align-self:end"><button id="saveBackend" class="primary" style="width:100%">Connect</button></div></div>
+      <div class="row" style="margin-top:6px"><button id="toggleKey" class="ghost">Show Key</button><button id="copyKey" class="ghost">Copy Key</button></div>
       <div class="row" style="margin-top:6px"><button id="refreshChain" class="ghost">Refresh option chain</button><button id="resetAccount" class="ghost">Reset paper ₹1L account</button></div>
       <p class="mini muted">The backend included in the repository uses Angel One SmartAPI only for market data. It does not contain a real-money <code>placeOrder</code> route. Optional server <code>.env</code> keys: <code>GITHUB_LOG_TOKEN</code> (auto-syncs closed trades + 15:15 IST summary to GitHub) and <code>TELEGRAM_BOT_TOKEN</code> / <code>TELEGRAM_CHAT_ID</code> (instant phone alerts).</p>
     </section>
