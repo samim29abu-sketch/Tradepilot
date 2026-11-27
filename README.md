@@ -10,7 +10,8 @@ TradePilot v4 is an installable phone-first PWA for **paper trading NIFTY and BA
   - **BANKNIFTY Engine:** `MTF 20-EMA Trend Pullback` (skips 11:30–13:15 midday chop, 1:3 R:R + Breakeven trail at 1.5R)
   - **Live Key Levels:** 15m Bias, PDH/PDL/PDC, 15m ORB, 5m EMA 20, ATR(14), and ATM Combined Straddle (`CE + PE`).
   - **1-Tap Arm** from your phone OR optional **Auto-Paper-Trade** mode with a `-₹3,000` daily max-loss kill switch, automatic breakeven trailing stop, and 15:10 IST intraday square-off.
-  - **Optional Telegram Phone Alerts** whenever a live high-reward setup triggers.
+  - **Automatic GitHub Trade Journal Sync:** Automatically commits every closed paper trade and a daily **15:15 IST session summary** (including 0-trade days) to [`trading-knowledge/live-proof-journal.md`](./trading-knowledge/live-proof-journal.md) and [`trading-knowledge/live-trades.json`](./trading-knowledge/live-trades.json), plus a 1-tap **Sync GitHub** / **Copy Log** button in the phone Order Book.
+  - **Optional Telegram Phone Alerts** whenever a live high-reward setup triggers or a trade closes.
 - **Live 60-Day NSE Proof** documented in [`trading-knowledge/12-proven-strategy-and-backtest.md`](./trading-knowledge/12-proven-strategy-and-backtest.md) and reproducible via `python3 trading-knowledge/backtest_proof.py`.
 - **Manual Paper Trading & Command Automation:**
   - `BUY NIFTY 25800 CE QTY 65 SL 110 TARGET 190`
@@ -23,6 +24,15 @@ TradePilot v4 is an installable phone-first PWA for **paper trading NIFTY and BA
 The GitHub Pages frontend is public static code, so **Angel One credentials must never be stored in it**. The private backend is bundled in [`install-tradepilot.py`](./install-tradepilot.py) and runs on your private host (e.g., AWS Lightsail) with credentials stored only in `.env`.
 
 The backend intentionally has **no Angel One `placeOrder` route**. It reads market data only. Real-money execution is never triggered.
+
+## Automatic GitHub Trade Log (No Lightsail Changes Required)
+
+The GitHub Actions workflow [`.github/workflows/sync-trade-log.yml`](./.github/workflows/sync-trade-log.yml) runs [`scripts/sync_trade_log.py`](./scripts/sync_trade_log.py) automatically Mon–Fri (every 30 min during `09:30–15:00 IST` plus a `15:16 IST` daily session summary, including 0-trade days) and commits updates to [`trading-knowledge/live-proof-journal.md`](./trading-knowledge/live-proof-journal.md) and [`trading-knowledge/live-trades.json`](./trading-knowledge/live-trades.json).
+
+One-time setup on GitHub (zero SSH or server reinstall needed):
+1. Go to **Repo Settings → Secrets and variables → Actions → New repository secret**.
+2. Add **`TRADEPILOT_APP_KEY`** = your existing TradePilot App Access Key. *(Optional: add `TRADEPILOT_BACKEND_URL` if you ever change the server URL.)*
+3. Go to **Actions → Auto-Log TradePilot Paper Trades → Run workflow** to sync immediately.
 
 ## Updating your private Lightsail backend
 
@@ -37,7 +47,8 @@ Required server-only `.env` fields:
 - `ANGEL_API_KEY`, `ANGEL_CLIENT_CODE`, `ANGEL_PIN`, `ANGEL_TOTP_SECRET`, `ANGEL_PUBLIC_IP`
 - `FRONTEND_ORIGIN=https://samim29abu-sketch.github.io`
 - `APP_ACCESS_TOKEN` (set during installer prompt; enter once in the phone app Connection screen)
-- *(Optional)* `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` for instant Telegram phone alerts when a live setup fires.
+- *(Optional)* `GITHUB_LOG_TOKEN` (Fine-Grained GitHub PAT scoped strictly to **Contents: Read and write** on `samim29abu-sketch/Tradepilot`; only needed if you want instant sub-second server push in addition to GitHub Actions)
+- *(Optional)* `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` for instant Telegram phone alerts when a live setup fires or a trade closes.
 
 ## Install on Phone (Android / iPhone)
 
